@@ -17,11 +17,12 @@ Vec2f randVec2f(float min, float max)
 
 int main()
 {
-    InteropOpenGL OpenGL(1200, 800, "Cuda OpenGL Interop", false);
+    InteropOpenGL OpenGL(1200, 800, "Cuda OpenGL Interop", true);
+    OpenGL.disableVSYNC();
 
     SharedArray<Particle> particles;
 
-    for (int i = 0; i < 1024; i++)
+    for (int i = 0; i < 1000000; i++)
     {
         Particle particle;
         particle.position = randVec2f(-1.0f, 1.0f);
@@ -33,18 +34,10 @@ int main()
 
     while (OpenGL.isAlive())
     {
-
-        for (int i = 0; i < particles.size; i++)
-        {
-            Particle& particle = particles.hostPointer[i];
-            particle.position = particle.position + particle.velocity;
-        }
-
-        particles.updateHostToDevice();
-
         OpenGL.executePixelKernel(particles.size, particles);
         OpenGL.renderFullScreenQuad();
         OpenGL.renderImGui();
+        OpenGL.processUserInput();
         OpenGL.swapBuffers();
     }
 
