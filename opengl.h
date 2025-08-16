@@ -9,8 +9,8 @@
 #include <GLFW/glfw3.h>
 #include <cuda_gl_interop.h>
 #include <string>
-#include "sharedarray.h"
-#include "particle.h"
+
+#include "state.h"
 
 class InteropOpenGL
 {
@@ -142,7 +142,7 @@ public:
         glfwTerminate();
     }
 
-    void executePixelKernel(int numParticles, SharedArray<Particle> particles);
+    void executePixelKernel(SimulationState& state);
     void initImGui();
     void renderImGui();
     void processUserInput();

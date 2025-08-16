@@ -21,10 +21,10 @@ __global__ void particleKernel(uchar4* pixels, int width, int height, SharedArra
     if (v < -1.0f)
         particle.position = { 0.0f, 0.0f };
 
-    if (u > 1.0f)
+    if (u > (width / (float)height))
         particle.position = { 0.0f, 0.0f };
 
-    if (u < -1.0f)
+    if (u < (-width / (float)height))
         particle.position = { 0.0f, 0.0f };
 
     particle.position = particle.position + particle.velocity;
@@ -58,14 +58,21 @@ __global__ void pixelKernel(uchar4* pixels, int width, int height)
     pixels[index] = make_uchar4(0, 0, 0, 255);
 }
 
-void InteropOpenGL::executePixelKernel(int numParticles, SharedArray<Particle> particles)
+void InteropOpenGL::executePixelKernel(SimulationState& state)
 {
-    uchar4* pixels = nullptr;
     size_t size = 0;
     cudaGraphicsMapResources(1, &cudaPBO, 0);
-    cudaGraphicsResourceGetMappedPointer((void**)&pixels, &size, cudaPBO);
-    pixelKernel <<<grid, block>>> (pixels, screenWidth, screenHeight);
-    particleKernel <<<(numParticles + 255) / 256, 256>>> (pixels, screenWidth, screenHeight, particles);
+    cudaGraphicsResourceGetMappedPointer((void**)&state.deviceState.pixels, &size, cudaPBO);
+
+    DeviceState& deviceState = state.deviceState;
+    deviceState.width = screenWidth;
+    deviceState.height = screenHeight;
+    pixelKernel <<<grid, block>>> (deviceState);
+
+    int threadsPerBlock = 256;
+    int blocksPerGrid = (deviceState.particles.size + threadsPerBlock - 1) / threadsPerBlock;
+    particleKernel <<<blocksPerGrid, threadsPerBlock>>> (deviceState);
+
     cudaDeviceSynchronize();
 }
 

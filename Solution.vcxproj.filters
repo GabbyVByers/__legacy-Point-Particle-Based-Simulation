@@ -33,7 +33,10 @@
     <CudaCompile Include="input.cpp">
       <Filter>Source Files</Filter>
     </CudaCompile>
-    <CudaCompile Include="particle.h">
+    <CudaCompile Include="state.h">
+      <Filter>Header Files</Filter>
+    </CudaCompile>
+    <CudaCompile Include="utilities.h">
       <Filter>Header Files</Filter>
     </CudaCompile>
   </ItemGroup>

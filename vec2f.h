@@ -13,5 +13,26 @@ struct Vec2f
             y + vec.y
         };
     }
+
+    __host__ __device__ Vec2f operator * (const float& value) const
+    {
+        return
+        {
+            x * value,
+            y * value
+        };
+    }
 };
 
+inline float length(const Vec2f& vec)
+{
+    float lenSq = (vec.x * vec.x) + (vec.y * vec.y);
+    return sqrt(lenSq);
+}
+
+inline void normalize(Vec2f& vec)
+{
+    float len = length(vec);
+    vec.x /= len;
+    vec.y /= len;
+}
