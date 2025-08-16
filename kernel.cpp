@@ -3,76 +3,59 @@
 #include "sharedarray.h"
 #include "vec2f.h"
 
-__global__ void particleKernel(uchar4* pixels, int width, int height, SharedArray<Particle> particles)
+__global__ void renderParticlesKernel(GlobalState globalState)
 {
     int particleIndex = (blockIdx.x * blockDim.x) + threadIdx.x;
-    if (particleIndex >= particles.size)
+    if (particleIndex >= globalState.particles.size)
         return;
 
-    Particle& particle = particles.devicePointer[particleIndex];
+    Particle& particle = globalState.particles.devicePointer[particleIndex];
 
     float u = particle.position.x;
     float v = particle.position.y;
     
+    int x = (((u * (globalState.height / (float)globalState.width)) + 1.0f) / 2.0f) * globalState.width;
+    int y = ((v + 1.0f) / 2.0f) * globalState.height;
+    int pixelIndex = y * globalState.width + x;
 
-    if (v > 1.0f)
-        particle.position = { 0.0f, 0.0f };
-
-    if (v < -1.0f)
-        particle.position = { 0.0f, 0.0f };
-
-    if (u > (width / (float)height))
-        particle.position = { 0.0f, 0.0f };
-
-    if (u < (-width / (float)height))
-        particle.position = { 0.0f, 0.0f };
-
-    particle.position = particle.position + particle.velocity;
-    
-    int x = (((u * (height / (float)width)) + 1.0f) / 2.0f) * width;
-    int y = ((v + 1.0f) / 2.0f) * height;
-
-    if ((x < 0) || (x >= width))
+    if ((x < 0) || (x >= globalState.width))
         return;
 
-    if ((y < 0) || (y >= height))
+    if ((y < 0) || (y >= globalState.height))
         return;
 
-    int pixelIndex = y * width + x;
-    pixels[pixelIndex] = make_uchar4(255, 255, 255, 255);
+    globalState.pixels[pixelIndex] = make_uchar4(255, 255, 255, 255);
 }
 
-__global__ void pixelKernel(uchar4* pixels, int width, int height)
+__global__ void clearScreenKernel(GlobalState globalState)
 {
     int x = blockIdx.x * blockDim.x + threadIdx.x;
     int y = blockIdx.y * blockDim.y + threadIdx.y;
-    float u = ((x / (float)width) * 2.0f - 1.0f) * (width / (float)height);
-    float v = (y / (float)height) * 2.0f - 1.0f;
-
     int index = -1;
-    if ((x < width) && (y < height))
-        index = y * width + x;
+
+    if ((x < globalState.width) && (y < globalState.height))
+        index = y * globalState.width + x;
     else
         return;
 
-    pixels[index] = make_uchar4(0, 0, 0, 255);
+    globalState.pixels[index] = make_uchar4(0, 0, 0, 255);
 }
 
-void InteropOpenGL::executePixelKernel(SimulationState& state)
+void InteropOpenGL::executeKernels(GlobalState& globalState)
 {
     size_t size = 0;
+    globalState.pixels = nullptr;
     cudaGraphicsMapResources(1, &cudaPBO, 0);
-    cudaGraphicsResourceGetMappedPointer((void**)&state.deviceState.pixels, &size, cudaPBO);
+    cudaGraphicsResourceGetMappedPointer((void**)&globalState.pixels, &size, cudaPBO);
 
-    DeviceState& deviceState = state.deviceState;
-    deviceState.width = screenWidth;
-    deviceState.height = screenHeight;
-    pixelKernel <<<grid, block>>> (deviceState);
+    globalState.width = screenWidth;
+    globalState.height = screenHeight;
+    clearScreenKernel <<<grid, block>>> (globalState);
+    cudaDeviceSynchronize();
 
     int threadsPerBlock = 256;
-    int blocksPerGrid = (deviceState.particles.size + threadsPerBlock - 1) / threadsPerBlock;
-    particleKernel <<<blocksPerGrid, threadsPerBlock>>> (deviceState);
-
+    int blocksPerGrid = (globalState.particles.size + threadsPerBlock - 1) / threadsPerBlock;
+    renderParticlesKernel <<<blocksPerGrid, threadsPerBlock>>> (globalState);
     cudaDeviceSynchronize();
 }
 

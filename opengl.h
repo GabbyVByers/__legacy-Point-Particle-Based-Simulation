@@ -130,7 +130,9 @@ public:
         enableVSYNC();
 	}
 
-    ~InteropOpenGL()
+    ~InteropOpenGL() { free(); }
+
+    void free()
     {
         cudaGraphicsUnregisterResource(cudaPBO);
         glDeleteBuffers(1, &PBO);
@@ -142,7 +144,7 @@ public:
         glfwTerminate();
     }
 
-    void executePixelKernel(SimulationState& state);
+    void executeKernels(GlobalState& globalState);
     void initImGui();
     void renderImGui();
     void processUserInput();

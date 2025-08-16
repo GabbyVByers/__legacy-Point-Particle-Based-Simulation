@@ -1,6 +1,6 @@
 #pragma once
 
-
+#include "vec2f.h"
 
 inline float randf(float min, float max)
 {

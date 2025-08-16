@@ -9,17 +9,11 @@ struct Particle
 	Vec2f velocity;
 };
 
-struct DeviceState
+struct GlobalState
 {
 	int width = -1;
 	int height = -1;
 	uchar4* pixels = nullptr;
-
 	SharedArray<Particle> particles;
 };
 
-struct SimulationState
-{
-
-	DeviceState deviceState;
-};
