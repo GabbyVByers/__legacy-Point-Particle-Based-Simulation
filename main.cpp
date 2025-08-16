@@ -9,15 +9,13 @@ int main()
     OpenGL.enableVSYNC();
 
     GlobalState globalState;
-    initParticles(globalState, 1000);
-
-    
+    initParticles(globalState, 4);
 
     while (OpenGL.isAlive())
     {
-        OpenGL.executeKernels(globalState);
+        OpenGL.executeCudaKernels(globalState);
         OpenGL.renderFullScreenQuad();
-        OpenGL.renderImGui();
+        OpenGL.renderImGui(globalState);
         OpenGL.processUserInput();
         OpenGL.swapBuffers();
     }

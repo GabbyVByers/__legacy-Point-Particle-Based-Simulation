@@ -144,7 +144,7 @@ public:
         glfwTerminate();
     }
 
-    void executeKernels(GlobalState& globalState);
+    void executeCudaKernels(GlobalState& globalState);
     void initImGui();
     void renderImGui();
     void processUserInput();

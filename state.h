@@ -24,7 +24,7 @@ inline void initParticles(GlobalState& globalState, int numParticles)
 	{
 		Particle particle;
 		particle.pos = randVec2f(-1.0f, 1.0f);
-		particle.vel = randVec2f(-0.01f, 0.01f);
+		particle.vel = randVec2f(-0.0001f, 0.0001f);
 		globalState.particles.add(particle);
 	}
 	globalState.particles.updateHostToDevice();

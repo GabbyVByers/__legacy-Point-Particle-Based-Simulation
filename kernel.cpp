@@ -5,43 +5,38 @@
 
 __global__ void particlePhysicsKernel(GlobalState globalState)
 {
-    int particleIndex = (blockIdx.x * blockDim.x) + threadIdx.x;
-    if (particleIndex >= globalState.particles.size)
+    int partIndex = (blockIdx.x * blockDim.x) + threadIdx.x;
+    if (partIndex >= globalState.particles.size)
         return;
 
-    Particle& particle = globalState.particles.devicePointer[particleIndex];
+    Particle& part = globalState.particles.devicePointer[partIndex];
     int numParticles = globalState.particles.size;
-    Vec2f& pos = particle.position;
-    Vec2f& vel = particle.velocity;
+    Vec2f& pos = part.pos;
+    Vec2f& vel = part.vel;
 
     pos = pos + vel;
 
     for (int i = 0; i < numParticles; i++)
     {
-        if (i == particleIndex)
+        if (i == partIndex)
             continue;
 
         Particle& other = globalState.particles.devicePointer[i];
-        float invDist = 1.0f / distance(pos, other.position);
 
-        Vec2f acceleration = other.position - pos;
-        normalize(acceleration);
-        acceleration = acceleration * 0.0000001f;
 
-        vel = vel + acceleration;
     }
 
 }
 
 __global__ void renderParticlesKernel(GlobalState globalState)
 {
-    int particleIndex = (blockIdx.x * blockDim.x) + threadIdx.x;
-    if (particleIndex >= globalState.particles.size)
+    int partIndex = (blockIdx.x * blockDim.x) + threadIdx.x;
+    if (partIndex >= globalState.particles.size)
         return;
 
-    Particle& particle = globalState.particles.devicePointer[particleIndex];
-    float u = particle.position.x;
-    float v = particle.position.y;
+    Particle& part = globalState.particles.devicePointer[partIndex];
+    float u = part.pos.x;
+    float v = part.pos.y;
     int x = (((u * (globalState.height / (float)globalState.width)) + 1.0f) / 2.0f) * globalState.width;
     int y = ((v + 1.0f) / 2.0f) * globalState.height;
     int pixelIndex = y * globalState.width + x;
@@ -63,7 +58,7 @@ __global__ void clearScreenKernel(GlobalState globalState)
         globalState.pixels[y * globalState.width + x] = make_uchar4(0, 0, 0, 255);
 }
 
-void InteropOpenGL::executeKernels(GlobalState& globalState)
+void InteropOpenGL::executeCudaKernels(GlobalState& globalState)
 {
     size_t size = 0;
     globalState.pixels = nullptr;
