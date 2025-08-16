@@ -13,10 +13,11 @@ int main()
 
     while (OpenGL.isAlive())
     {
+        OpenGL.getMouseProperties(globalState);
+        OpenGL.processUserInput(globalState);
         OpenGL.executeCudaKernels(globalState);
         OpenGL.renderFullScreenQuad();
         OpenGL.renderImGui(globalState);
-        OpenGL.processUserInput(globalState);
         OpenGL.swapBuffers();
     }
 

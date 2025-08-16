@@ -17,9 +17,15 @@ struct GlobalState
 	uchar4* pixels = nullptr;
 	SharedArray<Particle> particles;
 
-	float interactionRadius = 0.52f;
-	float forceScale = 0.000005f;
-	float velocityDampening = 0.95f;
+	Vec2f mousePos;
+	bool isMouseLeft = false;
+
+	float pauliExclusionPower = 12.0f;
+	float attractiveDispersionPower = 6.0f;
+	float interactionRadius = 0.01f;
+	float forceScaling = 0.1f;
+	float velocityDampening = 0.99f;
+	float mouseAttraction = 0.001f;
 };
 
 inline void initParticles(GlobalState& globalState, int numParticles)

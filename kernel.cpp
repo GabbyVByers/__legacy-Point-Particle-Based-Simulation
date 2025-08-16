@@ -11,10 +11,8 @@ __global__ void particlePhysicsKernel(GlobalState globalState)
 
     Particle& part = globalState.particles.devicePointer[partIndex];
     int numParts = globalState.particles.size;
-    Vec2f& pos = part.pos;
-    Vec2f& vel = part.vel;
 
-    pos = pos + vel;
+
 
     for (int i = 0; i < numParts; i++)
     {
@@ -22,20 +20,23 @@ __global__ void particlePhysicsKernel(GlobalState globalState)
             continue;
 
         Particle& other = globalState.particles.devicePointer[i];
-
-        float dist = distance(part.pos, other.pos);
-        if (dist > globalState.interactionRadius)
-            continue;
         
-        float force = -cos((dist * 3.1415927f * 1.5f) / globalState.interactionRadius);
-        Vec2f acc = other.pos - pos;
-        normalize(acc);
-        acc = acc * force * globalState.forceScale;
+        Vec2f acc = other.pos - part.pos;
+        float dist = length(acc);
+        
+        float d = dist;
+        float r = globalState.interactionRadius;
+        float exp_r = globalState.pauliExclusionPower;
+        float exp_a = globalState.attractiveDispersionPower;
+        float force = pow((r / d), exp_r) - pow((r / d), exp_a);
 
-        vel = vel + acc;
+        normalize(acc);
+        acc = acc * globalState.forceScaling * force;
+        part.vel = part.vel + acc;
     }
 
-    vel = vel * globalState.velocityDampening;
+    part.vel = part.vel * globalState.velocityDampening;
+    part.pos = part.pos + part.vel;
 }
 
 __global__ void renderParticlesKernel(GlobalState globalState)

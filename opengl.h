@@ -153,6 +153,19 @@ public:
     void enableVSYNC() { glfwSwapInterval(1); }
     void disableVSYNC() { glfwSwapInterval(0); }
 
+    void getMouseProperties(GlobalState& globalState)
+    {
+        double mouseX = 0.0;
+        double mouseY = 0.0;
+        glfwGetCursorPos(window, &mouseX, &mouseY);
+        globalState.mousePos.x = (float)mouseX;
+        globalState.mousePos.y = (float)mouseY;
+        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+            globalState.isMouseLeft = true;
+        else
+            globalState.isMouseLeft = false;
+    }
+
     void renderFullScreenQuad()
     {
         cudaGraphicsUnmapResources(1, &cudaPBO, 0);

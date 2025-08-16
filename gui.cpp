@@ -19,10 +19,6 @@ void InteropOpenGL::renderImGui(GlobalState& globalState)
     ImGui::NewFrame();
     ImGui::Begin("Title Text");
 
-    ImGui::DragFloat("Interaction Radius", &globalState.interactionRadius);
-    ImGui::DragFloat("Force Scaling", &globalState.forceScale);
-    ImGui::DragFloat("Velocity Dampening", &globalState.velocityDampening);
-
     ImGui::End();
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
