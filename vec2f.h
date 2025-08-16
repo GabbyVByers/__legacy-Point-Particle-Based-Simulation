@@ -14,6 +14,15 @@ struct Vec2f
         };
     }
 
+    __host__ __device__ Vec2f operator - (const Vec2f& vec) const
+    {
+        return
+        {
+            x - vec.x,
+            y - vec.y
+        };
+    }
+
     __host__ __device__ Vec2f operator * (const float& value) const
     {
         return
@@ -24,15 +33,20 @@ struct Vec2f
     }
 };
 
-inline float length(const Vec2f& vec)
+__host__ __device__ inline float length(const Vec2f& vec)
 {
     float lenSq = (vec.x * vec.x) + (vec.y * vec.y);
     return sqrt(lenSq);
 }
 
-inline void normalize(Vec2f& vec)
+__host__ __device__ inline void normalize(Vec2f& vec)
 {
     float len = length(vec);
     vec.x /= len;
     vec.y /= len;
+}
+
+__host__ __device__ inline float distance(Vec2f& A, Vec2f& B)
+{
+    return length(A - B);
 }
