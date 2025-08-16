@@ -10,10 +10,11 @@ int main()
 
     GlobalState globalState;
 
-    for (int i = 0; i < 1000; i++)
+    for (int i = 0; i < 10000000; i++)
     {
         Particle particle;
         particle.position = randVec2f(-1.0f, 1.0f);
+        particle.velocity = randVec2f(-0.001f, 0.001f);
         globalState.particles.add(particle);
     }
     globalState.particles.updateHostToDevice();
