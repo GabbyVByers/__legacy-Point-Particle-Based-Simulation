@@ -50,3 +50,4 @@ __host__ __device__ inline float distance(Vec2f& A, Vec2f& B)
 {
     return length(A - B);
 }
+

@@ -13,3 +13,4 @@ inline Vec2f randVec2f(float min, float max)
     float y = randf(min, max);
     return { x, y };
 }
+
