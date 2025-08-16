@@ -12,14 +12,16 @@ void InteropOpenGL::initImGui()
     ImGui_ImplOpenGL3_Init("#version 330");
 }
 
-void InteropOpenGL::renderImGui()
+void InteropOpenGL::renderImGui(GlobalState& globalState)
 {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
     ImGui::Begin("Title Text");
 
-    ImGui::DragFloat("");
+    ImGui::DragFloat("Interaction Radius", &globalState.interactionRadius);
+    ImGui::DragFloat("Force Scaling", &globalState.forceScale);
+    ImGui::DragFloat("Velocity Dampening", &globalState.velocityDampening);
 
     ImGui::End();
     ImGui::Render();

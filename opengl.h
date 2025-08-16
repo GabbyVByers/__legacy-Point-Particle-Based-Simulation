@@ -146,8 +146,8 @@ public:
 
     void executeCudaKernels(GlobalState& globalState);
     void initImGui();
-    void renderImGui();
-    void processUserInput();
+    void renderImGui(GlobalState& globalState);
+    void processUserInput(GlobalState& globalState);
 
     bool isAlive() const { return !glfwWindowShouldClose(window); }
     void enableVSYNC() { glfwSwapInterval(1); }
