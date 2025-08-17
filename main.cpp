@@ -9,7 +9,7 @@ int main()
     OpenGL.enableVSYNC();
 
     GlobalState globalState;
-    initParticles(globalState, 1000);
+    initParticles(globalState, 10);
 
     while (OpenGL.isAlive())
     {

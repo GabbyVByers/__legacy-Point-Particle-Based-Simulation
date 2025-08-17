@@ -19,6 +19,8 @@ void InteropOpenGL::renderImGui(GlobalState& globalState)
     ImGui::NewFrame();
     ImGui::Begin("Title Text");
 
+
+
     ImGui::End();
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

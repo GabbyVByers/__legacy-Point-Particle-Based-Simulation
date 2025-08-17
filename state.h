@@ -19,12 +19,11 @@ struct GlobalState
 
 	Vec2f mousePos;
 	bool isMouseLeft = false;
+	bool isMouseRight = false;
 
-	float pauliExclusionPower = 12.0f;
-	float attractiveDispersionPower = 6.0f;
-	float interactionRadius = 0.01f;
-	float forceScaling = 0.1f;
-	float velocityDampening = 0.99f;
+	float gravConstant = 0.00000001f;
+
+	float velocityDampening = 0.9f;
 	float mouseAttraction = 0.001f;
 };
 
@@ -34,7 +33,7 @@ inline void initParticles(GlobalState& globalState, int numParticles)
 	{
 		Particle part;
 		part.pos = randVec2f(-1.0f, 1.0f);
-		part.vel = randVec2f(-0.0001f, 0.0001f);
+		part.vel = randVec2f(-0.001f, 0.001f);
 		globalState.particles.add(part);
 	}
 	globalState.particles.updateHostToDevice();

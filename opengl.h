@@ -158,12 +158,22 @@ public:
         double mouseX = 0.0;
         double mouseY = 0.0;
         glfwGetCursorPos(window, &mouseX, &mouseY);
-        globalState.mousePos.x = (float)mouseX;
-        globalState.mousePos.y = (float)mouseY;
+
+        float v = (((screenHeight - mouseY) / screenHeight) * 2.0f) - 1.0f;
+        float u = (((mouseX / screenWidth) * 2.0f) - 1.0f) * (screenWidth / (float)screenHeight);
+
+        globalState.mousePos.x = u;
+        globalState.mousePos.y = v;
+        
         if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
             globalState.isMouseLeft = true;
         else
             globalState.isMouseLeft = false;
+
+        if (glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_RIGHT) == GLFW_PRESS)
+            globalState.isMouseRight = true;
+        else
+            globalState.isMouseRight = false;
     }
 
     void renderFullScreenQuad()
